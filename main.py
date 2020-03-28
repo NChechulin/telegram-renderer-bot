@@ -1,6 +1,7 @@
 import latex
 import logging
 import md
+import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # Enable logging
@@ -19,6 +20,10 @@ def get_token():
     raise Exception("Unable to read token from file token.txt")
 
 
+def send_document(user, file_path):
+    telegram.User.send_document(user, document=open(file_path, 'rb'))
+
+
 # Comand handlers
 def first_message(update, context):
     """Send a greeting message when /start or /help message is sent"""
@@ -30,16 +35,25 @@ def first_message(update, context):
 def text(update, context):
     global expect
 
-    # TODO: Send pdf file to user
-    if expect == 'latex':
+    # TODO: Add messages if file was incorrect
+    # TODO: Add file support
+
+    if expect == 'latemdx':
+        user = update.message.from_user
+
         pdf_path = latex.render(update.message.text)
-        update.message.reply_text('PDF was generated!')
-        update.message.reply_text(f'file is {pdf_path}')
+
+        send_document(user, pdf_path)
+
+        update.message.reply_text('PDF was generated')
         expect = None
     elif expect == 'markdown':
+        user = update.message.from_user
+
         pdf_path = md.render(update.message.text)
+        send_document(user, pdf_path)
+
         update.message.reply_text('PDF was generated')
-        update.message.reply_text(f'file is {pdf_path}')
         expect = None
 
 
