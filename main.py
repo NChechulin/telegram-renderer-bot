@@ -28,7 +28,12 @@ def send_document(user, file_path):
 def first_message_handler(update, context):
     """Send a greeting message when /start or /help message is sent"""
 
-    response = "Hi! I am Renderer Bot. I can render LaTeX and Markdown code. Type /latex to render LaTex or /md to render Markdown"
+    response = ("Hi!\n"
+                "I am Renderer Bot.\n"
+                "I can help you render your LaTeX or Markdown into PDF.\n"
+                "Type /latex or /md (/markdown, if you like) and try it!\n"
+                )
+
     update.message.reply_text(response)
 
 
@@ -40,20 +45,18 @@ def text_handler(update, context):
 
     if expect == 'latex':
         user = update.message.from_user
-
         pdf_path = latex.render(update.message.text)
 
+        update.message.reply_text('PDF was generated:')
         send_document(user, pdf_path)
-
-        update.message.reply_text('PDF was generated')
         expect = None
+
     elif expect == 'markdown':
         user = update.message.from_user
-
         pdf_path = md.render(update.message.text)
-        send_document(user, pdf_path)
 
-        update.message.reply_text('PDF was generated')
+        update.message.reply_text('PDF was generated:')
+        send_document(user, pdf_path)
         expect = None
 
 
