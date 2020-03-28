@@ -25,20 +25,20 @@ def send_document(user, file_path):
 
 
 # Comand handlers
-def first_message(update, context):
+def first_message_handler(update, context):
     """Send a greeting message when /start or /help message is sent"""
 
     response = "Hi! I am Renderer Bot. I can render LaTeX and Markdown code. Type /latex to render LaTex or /md to render Markdown"
     update.message.reply_text(response)
 
 
-def text(update, context):
+def text_handler(update, context):
     global expect
 
     # TODO: Add messages if file was incorrect
     # TODO: Add file support
 
-    if expect == 'latemdx':
+    if expect == 'latex':
         user = update.message.from_user
 
         pdf_path = latex.render(update.message.text)
@@ -57,19 +57,19 @@ def text(update, context):
         expect = None
 
 
-def latex_command(update, context):
+def latex_handler(update, context):
     global expect
     update.message.reply_text('Send your LaTeX code')
     expect = 'latex'
 
 
-def markdown_command(update, context):
+def markdown_handler(update, context):
     global expect
     update.message.reply_text('Send your Markdown code')
     expect = 'markdown'
 
 
-def error(update, context):
+def error_handler(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
@@ -81,17 +81,17 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", first_message))
-    dp.add_handler(CommandHandler("help", first_message))
-    dp.add_handler(CommandHandler("latex", latex_command))
-    dp.add_handler(CommandHandler("markdown", markdown_command))
-    dp.add_handler(CommandHandler("md", markdown_command))
+    dp.add_handler(CommandHandler("start", first_message_handler))
+    dp.add_handler(CommandHandler("help", first_message_handler))
+    dp.add_handler(CommandHandler("latex", latex_handler))
+    dp.add_handler(CommandHandler("markdown", markdown_handler))
+    dp.add_handler(CommandHandler("md", markdown_handler))
 
     # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, text))
+    dp.add_handler(MessageHandler(Filters.text, text_handler))
 
     # log all errors
-    dp.add_error_handler(error)
+    dp.add_error_handler(error_handler)
 
     # Start the Bot
     updater.start_polling()
