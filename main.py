@@ -16,14 +16,11 @@ def get_token():
 
 
 # Comand handlers
-def start(update, context):
-    """Send a message when the command /start is issued."""
-    update.message.reply_text('Hi!')
+def first_message(update, context):
+    """Send a greeting message when /start or /help message is sent"""
 
-
-def help(update, context):
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    response = "Hi! I am Renderer Bot. I can render LaTeX and Markdown code. Type /latex to render LaTex or /md to render Markdown"
+    update.message.reply_text(response)
 
 
 def echo(update, context):
@@ -43,8 +40,8 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("start", first_message))
+    dp.add_handler(CommandHandler("help", first_message))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
