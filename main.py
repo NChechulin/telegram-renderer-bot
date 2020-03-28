@@ -7,6 +7,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
+expect = None
+
 
 def get_token():
     with open('token.txt', 'r') as f:
@@ -23,16 +25,32 @@ def first_message(update, context):
     update.message.reply_text(response)
 
 
-def echo(update, context):
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
+def text(update, context):
+    global expect
+
+    if expect == 'latex':
+        update.message.reply_text('TODO: compile LaTeX')
+        expect = None
+    elif expect == 'markdown':
+        update.message.reply_text('TODO: compile Markdown')
+        expect = None
+
+
+def latex(update, context):
+    global expect
+    update.message.reply_text('Send your LaTeX code')
+    expect = 'latex'
+
+
+def markdown(update, context):
+    global expect
+    update.message.reply_text('Send your Markdown code')
+    expect = 'markdown'
 
 
 def error(update, context):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
-
-
+    logger.warning('Update "%s" caused error "%s"',markdown
 def main():
     # Create the Updater and pass it your bot's token.
     updater = Updater(get_token(), use_context=True)
@@ -42,9 +60,12 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", first_message))
     dp.add_handler(CommandHandler("help", first_message))
+    dp.add_handler(CommandHandler("latex", latex))
+    dp.add_handler(CommandHandler("markdown", markdown))
+    dp.add_handler(CommandHandler("md", markdown))
 
     # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, echo))
+    dp.add_handler(MessageHandler(Filters.text, text))
 
     # log all errors
     dp.add_error_handler(error)
