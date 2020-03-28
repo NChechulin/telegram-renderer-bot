@@ -38,7 +38,7 @@ def text(update, context):
     # TODO: Add messages if file was incorrect
     # TODO: Add file support
 
-    if expect == 'latemdx':
+    if expect == 'latex':
         user = update.message.from_user
 
         pdf_path = latex.render(update.message.text)
