@@ -1,4 +1,6 @@
+import latex
 import logging
+import md
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # Enable logging
@@ -28,21 +30,26 @@ def first_message(update, context):
 def text(update, context):
     global expect
 
+    # TODO: Send pdf file to user
     if expect == 'latex':
-        update.message.reply_text('TODO: compile LaTeX')
+        pdf_path = latex.render(update.message.text)
+        update.message.reply_text('PDF was generated!')
+        update.message.reply_text(f'file is {pdf_path}')
         expect = None
     elif expect == 'markdown':
-        update.message.reply_text('TODO: compile Markdown')
+        pdf_path = md.render(update.message.text)
+        update.message.reply_text('PDF was generated')
+        update.message.reply_text(f'file is {pdf_path}')
         expect = None
 
 
-def latex(update, context):
+def latex_command(update, context):
     global expect
     update.message.reply_text('Send your LaTeX code')
     expect = 'latex'
 
 
-def markdown(update, context):
+def markdown_command(update, context):
     global expect
     update.message.reply_text('Send your Markdown code')
     expect = 'markdown'
@@ -50,7 +57,9 @@ def markdown(update, context):
 
 def error(update, context):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"',markdown
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+
+
 def main():
     # Create the Updater and pass it your bot's token.
     updater = Updater(get_token(), use_context=True)
@@ -60,9 +69,9 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", first_message))
     dp.add_handler(CommandHandler("help", first_message))
-    dp.add_handler(CommandHandler("latex", latex))
-    dp.add_handler(CommandHandler("markdown", markdown))
-    dp.add_handler(CommandHandler("md", markdown))
+    dp.add_handler(CommandHandler("latex", latex_command))
+    dp.add_handler(CommandHandler("markdown", markdown_command))
+    dp.add_handler(CommandHandler("md", markdown_command))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, text))
