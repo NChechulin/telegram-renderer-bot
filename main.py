@@ -1,26 +1,29 @@
-from rendering import render_latex, render_markdown
+"""Main file which starts the bot and sets all of the parameters"""
 
 import logging
 import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from rendering import render_latex, render_markdown
+
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-logger = logging.getLogger(__name__)
-
-expect = None
+LOGGER = logging.getLogger(__name__)
+EXPECT = None
 
 
 def get_token():
-    with open('token.txt', 'r') as f:
-        return f.read().strip()
+    """This functions reads file with token and returns it"""
+    with open('token.txt', 'r') as token_file:
+        return token_file.read().strip()
 
     raise Exception("Unable to read token from file token.txt")
 
 
 def send_document(user, file_path):
+    """This function sends specified file to selected user"""
     telegram.User.send_document(user, document=open(file_path, 'rb'))
 
 
@@ -39,61 +42,61 @@ def first_message_handler(update, context):
 
 def text_handler(update, context):
     """Handle text messages. Mostly used to receive and process LaTeX/Markdown code"""
-    global expect
+    global EXPECT
 
     # TODO: Add messages if file was incorrect
-    # TODO: Add file support
 
-    if expect == 'latex':
+    if EXPECT == 'latex':
         user = update.message.from_user
         pdf_path = render_latex(update.message.text)
 
         update.message.reply_text('PDF was generated:')
         send_document(user, pdf_path)
-        expect = None
+        EXPECT = None
 
-    elif expect == 'markdown':
+    elif EXPECT == 'markdown':
         user = update.message.from_user
         pdf_path = render_markdown(update.message.text)
 
         update.message.reply_text('PDF was generated:')
         send_document(user, pdf_path)
-        expect = None
+        EXPECT = None
 
 
 def latex_handler(update, context):
     """Handle /latex command"""
-    global expect
+    global EXPECT
     update.message.reply_text('Send your LaTeX code')
-    expect = 'latex'
+    EXPECT = 'latex'
 
 
 def markdown_handler(update, context):
     """Handle /markdown command"""
-    global expect
+    global EXPECT
     update.message.reply_text('Send your Markdown code')
-    expect = 'markdown'
+    EXPECT = 'markdown'
 
 
 def error_handler(update, context):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    LOGGER.warning('Update "%s" caused error "%s"', update, context.error)
 
 
 def main():
+    """Starts the bot"""
     updater = Updater(get_token(), use_context=True)
 
-    dp = updater.dispatcher
+    dispatcher = updater.dispatcher
 
-    dp.add_handler(CommandHandler("start", first_message_handler))
-    dp.add_handler(CommandHandler("help", first_message_handler))
-    dp.add_handler(CommandHandler("latex", latex_handler))
-    dp.add_handler(CommandHandler("markdown", markdown_handler))
-    dp.add_handler(CommandHandler("md", markdown_handler))
+    dispatcher.add_handler(CommandHandler("start", first_message_handler))
+    dispatcher.add_handler(CommandHandler("help", first_message_handler))
+    dispatcher.add_handler(CommandHandler("latex", latex_handler))
+    dispatcher.add_handler(CommandHandler("markdown", markdown_handler))
+    dispatcher.add_handler(CommandHandler("md", markdown_handler))
 
-    dp.add_handler(MessageHandler(Filters.text, text_handler))
+    dispatcher.add_handler(MessageHandler(Filters.text, text_handler))
 
-    dp.add_error_handler(error_handler)
+    dispatcher.add_error_handler(error_handler)
 
     updater.start_polling()
     updater.idle()
