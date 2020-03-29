@@ -1,6 +1,6 @@
-import latex
+from rendering import render_latex, render_markdown
+
 import logging
-import md
 import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -46,7 +46,7 @@ def text_handler(update, context):
 
     if expect == 'latex':
         user = update.message.from_user
-        pdf_path = latex.render(update.message.text)
+        pdf_path = render_latex(update.message.text)
 
         update.message.reply_text('PDF was generated:')
         send_document(user, pdf_path)
@@ -54,7 +54,7 @@ def text_handler(update, context):
 
     elif expect == 'markdown':
         user = update.message.from_user
-        pdf_path = md.render(update.message.text)
+        pdf_path = render_markdown(update.message.text)
 
         update.message.reply_text('PDF was generated:')
         send_document(user, pdf_path)
