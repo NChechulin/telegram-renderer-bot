@@ -3,6 +3,7 @@
 import json
 import logging
 import telegram
+import parsing
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from rendering import render_latex, render_markdown
 
@@ -90,7 +91,8 @@ class Bot():
 
         if self.expect == 'latex':
             user = update.message.from_user
-            pdf_path = render_latex(update.message.text)
+            code = parsing.parse_text(update.message.text)
+            pdf_path = render_latex(code)
 
             update.message.reply_text('PDF was generated:')
             self.__send_document(user, pdf_path)
@@ -98,7 +100,8 @@ class Bot():
 
         elif self.expect == 'markdown':
             user = update.message.from_user
-            pdf_path = render_markdown(update.message.text)
+            code = parsing.parse_text(update.message.text)
+            pdf_path = render_markdown(code)
 
             update.message.reply_text('PDF was generated:')
             self.__send_document(user, pdf_path)
