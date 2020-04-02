@@ -1,6 +1,9 @@
+"""Implementation of different input methods"""
+
 import requests
 
 def parse_link(url: str):
+    """Returns code from specified url. Only raw pages are supported right now."""
     if url.startswith('www.'):
         url = 'http://' + url[4:]
 
