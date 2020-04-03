@@ -68,8 +68,13 @@ class Bot():
             raise Exception(f"Unable to read token from {token_file_path}")
 
     def __send_document(self, user, file_path):
-        """Function sends file to selected user"""
-        telegram.User.send_document(user, document=open(file_path, 'rb'))
+        """Sends file to selected user"""
+        if file_path is not None:
+            telegram.User.send_message(user, text='PDF was generated:')
+            telegram.User.send_document(user, document=open(file_path, 'rb'))
+        else:
+            error_msg = 'Error. Please check if code is correct'
+            telegram.User.send_message(user, text=error_msg)
 
     # Comand handlers
     def __first_message_handler(self, update, context):
@@ -87,14 +92,11 @@ class Bot():
         """Handle text messages. Mostly used to receive and process LaTeX/Markdown code"""
         global EXPECT
 
-        # TODO: Add messages if file was incorrect
-
         if self.expect == 'latex':
             user = update.message.from_user
             code = parsing.parse_text(update.message.text)
             pdf_path = render_latex(code)
 
-            update.message.reply_text('PDF was generated:')
             self.__send_document(user, pdf_path)
             self.expect = None
 
@@ -103,7 +105,6 @@ class Bot():
             code = parsing.parse_text(update.message.text)
             pdf_path = render_markdown(code)
 
-            update.message.reply_text('PDF was generated:')
             self.__send_document(user, pdf_path)
             self.expect = None
 
