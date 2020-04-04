@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 
 def parse_github(url):
+    """Gets code from link to file in a repo"""
     try:
         html = requests.get(url).text
         soup = BeautifulSoup(html, 'html.parser')
@@ -20,6 +21,7 @@ def parse_github(url):
 
 
 def parse_pastebin(url):
+    """Gets code from link like pastebin.com/***"""
     try:
         html = requests.get(url).text
         soup = BeautifulSoup(html, 'html.parser')
