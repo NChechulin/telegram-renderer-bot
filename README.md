@@ -1,5 +1,5 @@
 ## :ru: Русская версия
-Версия на русском языке доступна здесь [здесь](README.md)
+Версия на русском языке доступна [здесь](README.md)
 
 # Telegram Renderer Bot
 
@@ -14,7 +14,7 @@ You can upload your code by sending:
 * a file
 * a link to a file on the Internet
 * a link to a file on GitHub
-* a link to paste on pastebin.org
+* a link to paste on [Pastebin](http://pastebin.org)
 
 ## Setup
 

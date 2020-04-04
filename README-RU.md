@@ -14,7 +14,7 @@ English version is available [here](README.md)
 * Файл
 * Ссылку на файл в Интернете
 * Ссылку на файл на GitHub
-* Ссылку на пасту с pastebin.org
+* Ссылку на пасту с [Pastebin](http://pastebin.org)
 
 ## Установка
 
