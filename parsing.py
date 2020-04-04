@@ -19,6 +19,18 @@ def parse_github(url):
         return None
 
 
+def parse_pastebin(url):
+    try:
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html.parser')
+
+        text_box = soup.find('textarea', {'id': 'paste_code'})
+
+        return text_box.text
+    except Exception:
+        return None
+
+
 def parse_link(url: str):
     """Returns code from specified url. Only raw pages are supported right now."""
     if url.startswith('www.'):
@@ -28,6 +40,8 @@ def parse_link(url: str):
 
     if url.startswith('http://github.com/'):
         return parse_github(url)
+    elif url.startswith('http://pastebin.com/'):
+        return parse_pastebin(url)
 
     try:
         return requests.get(url).text
