@@ -9,9 +9,9 @@ Main focus of the project is to give you flexebility in uploading code.
 You can upload your code by sending:
 * code as a message
 * a file
-* a link for a raw file
+* a link to a file on the Internet
 * a link to a file on GitHub
-* a link to paste on pastebin
+* a link to paste on pastebin.org
 
 ## Setup
 
@@ -22,12 +22,12 @@ cd telegram-renderer-bot
 ```
 
 Now you need to ensure that `pdflatex` and `python3` are installed on your system.
-If everything is OK, install the project requirements:
+If everything is OK, install the Python requirements:
 ```
 pip install -r requirements.txt
 ```
 
-When requirements are installed, register your bot at `@botfather` and write the token to `token.txt`.
+When requirements are installed, register your bot at `@botfather` in Telegram and replace the first line of `token.txt` with your bot's token.
 
 Now we can run the bot:
 ```
