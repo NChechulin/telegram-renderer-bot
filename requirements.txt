@@ -54,7 +54,7 @@ python-telegram-bot==12.4.2
 python-xlib==0.26
 pytz==2019.3
 PyYAML==5.3.1
-requests==2.7.0
+requests==2.20.0
 rope==0.16.0
 sip==4.19.21
 six==1.14.0
