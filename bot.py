@@ -20,11 +20,12 @@ class Bot():
     updater = None
     dispatcher = None
     expect = None
+    bot = None
 
     def __init__(self, token_file_path: str):
         self.__set_token(token_file_path)
         self.logger = logging.getLogger(__name__)
-        self.updater = Updater(self.TOKEN, use_context=True)
+        self.updater = Updater(self.token, use_context=True)
         self.dispatcher = self.updater.dispatcher
         self.__set_handlers()
 
@@ -49,7 +50,8 @@ class Bot():
             CommandHandler("latex", self.__latex_handler),
             CommandHandler("markdown", self.__markdown_handler),
             CommandHandler("md", self.__markdown_handler),
-            MessageHandler(Filters.text, self.__text_handler)
+            MessageHandler(Filters.text, self.__text_handler),
+            MessageHandler(Filters.document, self.__document_handler)
         ]
 
         for handler in handlers:
@@ -61,7 +63,7 @@ class Bot():
         """Reads file with bot token and sets token"""
         try:
             with open(token_file_path, 'r') as token_file:
-                self.TOKEN = token_file.read().strip()
+                self.token = token_file.read().strip()
         except FileNotFoundError:
             raise Exception(f"File {token_file_path} does not exist")
         except:
@@ -75,6 +77,12 @@ class Bot():
         else:
             error_msg = 'Error. Please check if code is correct'
             telegram.User.send_message(user, text=error_msg)
+
+    def __get_document_content(self, file_id):
+        # b = telegram.Bot(self.token)
+        f = telegram.Bot.getFile(self.updater.bot, file_id)
+
+        return parsing.parse_link(f['file_path'])
 
     # Comand handlers
     def __first_message_handler(self, update, context):
@@ -90,23 +98,26 @@ class Bot():
 
     def __text_handler(self, update, context):
         """Handle text messages. Mostly used to receive and process LaTeX/Markdown code"""
-        global EXPECT
-
-        if self.expect == 'latex':
-            user = update.message.from_user
+        try:
             code = parsing.parse_text(update.message.text)
-            pdf_path = render_latex(code)
-
-            self.__send_document(user, pdf_path)
-            self.expect = None
-
-        elif self.expect == 'markdown':
             user = update.message.from_user
-            code = parsing.parse_text(update.message.text)
-            pdf_path = render_markdown(code)
 
-            self.__send_document(user, pdf_path)
-            self.expect = None
+            if self.expect == 'latex':
+                pdf_path = render_latex(code)
+
+                self.__send_document(user, pdf_path)
+                self.expect = None
+
+            elif self.expect == 'markdown':
+                pdf_path = render_markdown(code)
+
+                self.__send_document(user, pdf_path)
+                self.expect = None
+            else:
+                error_msg = 'Please specify language before rendering code. Type /help for help'
+                update.message.reply_text(error_msg)
+        except Exception:
+            update.message.reply_text('Error. Could not send file')
 
     def __latex_handler(self, update, context):
         """Handle /latex command"""
@@ -117,6 +128,29 @@ class Bot():
         """Handle /markdown command"""
         update.message.reply_text('Send your Markdown code')
         self.expect = 'markdown'
+
+    def __document_handler(self, update, context):
+        try:
+            file_id = update.message.document.file_id
+            code = self.__get_document_content(file_id)
+            user = update.message.from_user
+
+            if self.expect == 'latex':
+                pdf_path = render_latex(code)
+
+                self.__send_document(user, pdf_path)
+                self.expect = None
+
+            elif self.expect == 'markdown':
+                pdf_path = render_markdown(code)
+
+                self.__send_document(user, pdf_path)
+                self.expect = None
+            else:
+                error_msg = 'Please specify language before rendering code. Type /help for help'
+                update.message.reply_text(error_msg)
+        except Exception:
+            update.message.reply_text('Error. Could not send file')
 
     def __error_handler(self, update, context):
         """Log Errors caused by Updates."""
