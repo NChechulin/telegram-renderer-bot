@@ -106,12 +106,20 @@ class Bot():
 
     def __latex_handler(self, update, context):
         """Handle /latex command"""
-        update.message.reply_text('Send your LaTeX code')
+        message = (
+            'Send your LaTeX code or '
+            'link to raw file, file on github, or a paste on pastebin.org'
+        )
+        update.message.reply_text(message)
         self.expect = 'latex'
 
     def __markdown_handler(self, update, context):
         """Handle /markdown command"""
-        update.message.reply_text('Send your Markdown code')
+        message = (
+            'Send your Markdown code or '
+            'link to raw file, file on github, or a paste on pastebin.org'
+        )
+        update.message.reply_text(message)
         self.expect = 'markdown'
 
     def __error_handler(self, update, context):
