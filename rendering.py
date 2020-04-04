@@ -7,6 +7,10 @@ from markdown import markdown
 import pdfkit
 
 
+def try_create_tempdir():
+    os.makedirs(os.getcwd() + "/TEMP", exist_ok=True)
+
+
 def generate_random_name(size=120, alphabet=string.ascii_letters):
     """This fuction generates a random name from file. The length and alphabet can be changed"""
     return ''.join(random.choice(alphabet) for _ in range(size))
@@ -17,6 +21,7 @@ def render_markdown(code):
     filename = 'TEMP/' + generate_random_name() + '.pdf'
 
     try:
+        try_create_tempdir()
         html_text = markdown(code, output_format='html4')
         pdfkit.from_string(html_text, filename)
     except Exception:
@@ -30,6 +35,8 @@ def render_latex(code):
     filename = 'TEMP/' + generate_random_name()
     tex_file_path = filename + '.tex'
     pdf_file_path = filename + '.pdf'
+
+    try_create_tempdir()
 
     with open(tex_file_path, 'w') as tex_file:
         tex_file.write(code)
