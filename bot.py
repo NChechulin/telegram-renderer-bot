@@ -76,10 +76,10 @@ class Bot():
             telegram.User.send_message(user, text=error_msg)
 
     def __get_document_content(self, file_id):
-        # b = telegram.Bot(self.token)
-        f = telegram.Bot.getFile(self.updater.bot, file_id)
+        """Returns content of file by file_id"""
+        received_file = telegram.Bot.getFile(self.updater.bot, file_id)
 
-        return parsing.parse_link(f['file_path'])
+        return parsing.parse_link(received_file['file_path'])
 
     # Comand handlers
     def __first_message_handler(self, update, context):
@@ -135,6 +135,7 @@ class Bot():
         self.expect = 'markdown'
 
     def __document_handler(self, update, context):
+        """Handle sent documents"""
         try:
             file_id = update.message.document.file_id
             code = self.__get_document_content(file_id)
