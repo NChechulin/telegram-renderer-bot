@@ -1,30 +1,28 @@
-"""Main file which starts the bot and sets all of the parameters"""
+"""Class of bot"""
 
-import json
 import logging
 import telegram
-import parsing
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import parsing
 from rendering import render_latex, render_markdown
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-LOGGER = logging.getLogger(__name__)
-EXPECT = None
-
 
 class Bot():
+    """Main class of bot, which encapsulates all of interactions with user"""
     logger = None
     updater = None
     dispatcher = None
     expect = None
+    token = None
 
     def __init__(self, token_file_path: str):
         self.__set_token(token_file_path)
         self.logger = logging.getLogger(__name__)
-        self.updater = Updater(self.TOKEN, use_context=True)
+        self.updater = Updater(self.token, use_context=True)
         self.dispatcher = self.updater.dispatcher
         self.__set_handlers()
 
@@ -40,7 +38,7 @@ class Bot():
     def __check(self):
         """Checks if all necessary variables are set"""
         to_check = [self.logger, self.updater, self.dispatcher]
-        return all([i != None for i in to_check])
+        return all([i is not None for i in to_check])
 
     def __set_handlers(self):
         handlers = [
@@ -61,7 +59,7 @@ class Bot():
         """Reads file with bot token and sets token"""
         try:
             with open(token_file_path, 'r') as token_file:
-                self.TOKEN = token_file.read().strip()
+                self.token = token_file.read().strip()
         except FileNotFoundError:
             raise Exception(f"File {token_file_path} does not exist")
         except:
@@ -90,8 +88,6 @@ class Bot():
 
     def __text_handler(self, update, context):
         """Handle text messages. Mostly used to receive and process LaTeX/Markdown code"""
-        global EXPECT
-
         if self.expect == 'latex':
             user = update.message.from_user
             code = parsing.parse_text(update.message.text)
@@ -120,4 +116,5 @@ class Bot():
 
     def __error_handler(self, update, context):
         """Log Errors caused by Updates."""
-        LOGGER.warning('Update "%s" caused error "%s"', update, context.error)
+        self.logger.warning('Update "%s" caused error "%s"',
+                            update, context.error)
