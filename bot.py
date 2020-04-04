@@ -1,26 +1,23 @@
-"""Main file which starts the bot and sets all of the parameters"""
+"""Class of bot"""
 
-import json
 import logging
 import telegram
-import parsing
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import parsing
 from rendering import render_latex, render_markdown
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-LOGGER = logging.getLogger(__name__)
-EXPECT = None
-
 
 class Bot():
+    """Main class of bot, which encapsulates all of interactions with user"""
     logger = None
     updater = None
     dispatcher = None
     expect = None
-    bot = None
+    token = None
 
     def __init__(self, token_file_path: str):
         self.__set_token(token_file_path)
@@ -41,7 +38,7 @@ class Bot():
     def __check(self):
         """Checks if all necessary variables are set"""
         to_check = [self.logger, self.updater, self.dispatcher]
-        return all([i != None for i in to_check])
+        return all([i is not None for i in to_check])
 
     def __set_handlers(self):
         handlers = [
@@ -121,12 +118,20 @@ class Bot():
 
     def __latex_handler(self, update, context):
         """Handle /latex command"""
-        update.message.reply_text('Send your LaTeX code')
+        message = (
+            'Send your LaTeX code or '
+            'link to raw file, file on github, or a paste on pastebin.org'
+        )
+        update.message.reply_text(message)
         self.expect = 'latex'
 
     def __markdown_handler(self, update, context):
         """Handle /markdown command"""
-        update.message.reply_text('Send your Markdown code')
+        message = (
+            'Send your Markdown code or '
+            'link to raw file, file on github, or a paste on pastebin.org'
+        )
+        update.message.reply_text(message)
         self.expect = 'markdown'
 
     def __document_handler(self, update, context):
@@ -154,4 +159,5 @@ class Bot():
 
     def __error_handler(self, update, context):
         """Log Errors caused by Updates."""
-        LOGGER.warning('Update "%s" caused error "%s"', update, context.error)
+        self.logger.warning('Update "%s" caused error "%s"',
+                            update, context.error)
