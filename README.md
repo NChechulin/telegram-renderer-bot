@@ -1,3 +1,6 @@
+## :ru: Русская версия
+Версия на русском языке доступна здесь [здесь](README.md)
+
 # Telegram Renderer Bot
 
 This project is a small Telegram bot made for rendering your LaTeX or Markdown code in PDF.

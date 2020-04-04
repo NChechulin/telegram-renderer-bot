@@ -1,3 +1,6 @@
+## :us: English version
+English version is available [here](README.md)
+
 # Telegram Renderer Bot
 
 Этот проект - небольшой Telegram бот, созданный для рендеринга ваших Latex и Markdown документов в PDF.
