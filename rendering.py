@@ -3,8 +3,14 @@
 import string
 import random
 import os
+import multiprocessing
+import time
 from markdown import markdown
 import pdfkit
+
+
+MAX_WAIT_TIME = 3
+POLLING_RATE = 10
 
 
 def try_create_tempdir():
@@ -30,11 +36,10 @@ def render_markdown(code):
     return filename
 
 
-def render_latex(code):
-    """Returns path to generated PDF or None"""
+def __run_pdflatex(code, send_end):
+    """Sets path to generated PDF or None"""
     filename = 'TEMP/' + generate_random_name()
     tex_file_path = filename + '.tex'
-    pdf_file_path = filename + '.pdf'
 
     try_create_tempdir()
 
@@ -44,7 +49,29 @@ def render_latex(code):
     try:
         command = f'pdflatex -output-directory=TEMP {tex_file_path} > /dev/null'
         os.system(command)
+        send_end.send(filename + '.pdf')
     except Exception:
-        return None
+        send_end.send(None)
+
+
+def render_latex(code):
+    """Returns path to generated PDF or None"""
+    pdf_file_path = None
+    recv_end, send_end = multiprocessing.Pipe(False)
+    proc = multiprocessing.Process(
+        target=__run_pdflatex, args=(code, send_end))
+    proc.start()
+
+    for _ in range(POLLING_RATE * MAX_WAIT_TIME):
+        if proc.is_alive():
+            time.sleep(1 / POLLING_RATE)
+        else:
+            pdf_file_path = recv_end.recv()
+            break
+
+    if proc.is_alive():
+        print('proc was killed')
+        proc.terminate()
+        proc.join()
 
     return pdf_file_path
