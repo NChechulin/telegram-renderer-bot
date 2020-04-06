@@ -70,8 +70,7 @@ def render_latex(code):
             break
 
     if proc.is_alive():
-        print('proc was killed')
-        proc.terminate()
+        proc.kill()
         proc.join()
 
     return pdf_file_path
