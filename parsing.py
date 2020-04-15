@@ -42,7 +42,7 @@ def parse_link(url: str):
 
     if url.startswith('http://github.com/'):
         return parse_github(url)
-    elif url.startswith('http://pastebin.com/'):
+    elif url.startswith('http://pastebin.com/') and not ('/raw/' in url):
         return parse_pastebin(url)
 
     try:
