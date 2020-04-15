@@ -24,7 +24,7 @@ git clone https://github.com/NChechulin/telegram-renderer-bot.git
 cd telegram-renderer-bot
 ```
 
-Теперь вам нужно убедиться, что программы `pdflatex` и `python3` установлены на вашей системе.
+Теперь вам нужно убедиться, что программы `pdflatex`, `wkhtmltopdf` и `python3` установлены на вашей системе.
 Если все установлено, можно установить зависимости Python:
 ```
 pip install -r requirements.txt
