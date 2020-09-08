@@ -37,8 +37,3 @@ Now we can run the bot:
 python3 main.py
 ```
 
-### Solving issues with connection
-
-Telegram might be blocked in Russia, so sometimes bot can't connect to Telegram servers.
-To solve this issue you can use VPN (for example, [Windscribe](https://windscribe.com))
-
