@@ -1,5 +1,5 @@
 Markdown==3.4.1
-requests==2.23.0
+requests==2.28.1
 pdfkit==0.6.1
 python_telegram_bot==12.8
 beautifulsoup4==4.11.1
